@@ -23,7 +23,7 @@ def build_note_mapping(in_wunderlist_content):
     return result
 
 
-def move_content(in_wunderlist_backup_file, in_asana_token, in_workspace_name):
+def move_content(in_wunderlist_backup_file, in_asana_token, in_workspace_name, team_id):
     with open(in_wunderlist_backup_file) as wunderlist_in:
         wunderlist_content = json.load(wunderlist_in)
 
@@ -43,7 +43,8 @@ def move_content(in_wunderlist_backup_file, in_asana_token, in_workspace_name):
         ))
         result = client.projects.create_in_workspace(
             workspace_id,
-            {'name': project['title']}
+            {'team': team_id,
+            'name': project['title']}
         )
         project_mapping[project['id']] = result['id']
 
@@ -114,9 +115,11 @@ def parse_args():
     )
     parser.add_argument('workspace_name', type=str, help='Asana workspace name')
 
+    parser.add_argument('team_id', type=str, help='Asana team ID')
+
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    move_content(args.wunderlist_backup, args.asana_token, args.workspace_name)
+    move_content(args.wunderlist_backup, args.asana_token, args.workspace_name, args.team_id)
